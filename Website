@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Metro Park & Ride – Open Payment Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .payment-options {
+      margin-top: 16px;
+    }
+
+    .payment-options label {
+      font-weight: normal;
+      margin-top: 8px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 12px;
+      background: #0078ae;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005f8c;
+    }
+
+    .confirmation {
+      margin-top: 24px;
+      background: #eef6fb;
+      padding: 16px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #555;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Metro Park & Ride Demo</h1>
+
+    <label for="zone">Parking Zone</label>
+    <select id="zone">
+      <option value="">Select a zone</option>
+      <option value="A">Zone A – Station Garage</option>
+      <option value="B">Zone B – Surface Lot</option>
+      <option value="C">Zone C – Shared Parking</option>
+    </select>
+
+    <label for="duration">Parking Duration</label>
+    <select id="duration">
+      <option value="">Select duration</option>
+      <option value="4">Up to 4 hours</option>
+      <option value="8">Up to 8 hours</option>
+      <option value="24">Daily Parking</option>
+    </select>
+
+    <div class="payment-options">
+      <label>
+        <input type="radio" name="paymentType" value="tap" onclick="togglePayment()"> 
+        Pay with TAP Card
+      </label>
+      <label>
+        <input type="radio" name="paymentType" value="open" onclick="togglePayment()"> 
+        Pay with Contactless Card or Mobile Wallet
+      </label>
+    </div>
+
+    <div id="tapInput" class="hidden">
+      <label for="tapId">TAP Card Number</label>
+      <input type="text" id="tapId" placeholder="Enter 16 or 20 digit TAP ID">
+    </div>
+
+    <div id="openPaymentInfo" class="hidden">
+      <label>Contactless Payment</label>
+      <input type="text" placeholder="Confirm card or mobile wallet" disabled>
+      <div class="note">
+        You must use the same card or device when paying your transit fare.
+      </div>
+    </div>
+
+    <button onclick="submitParking()">Start Parking Session</button>
+
+    <div id="confirmation" class="confirmation hidden"></div>
+  </div>
+
+  <script>
+    function togglePayment() {
+      const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+      document.getElementById('tapInput').classList.add('hidden');
+      document.getElementById('openPaymentInfo').classList.add('hidden');
+
+      if (paymentType === 'tap') {
+        document.getElementById('tapInput').classList.remove('hidden');
+      } else {
+        document.getElementById('openPaymentInfo').classList.remove('hidden');
+      }
+    }
+
+    function submitParking() {
+      const zone = document.getElementById('zone').value;
+      const duration = document.getElementById('duration').value;
+      const paymentType = document.querySelector('input[name="paymentType"]:checked');
+
+      if (!zone || !duration || !paymentType) {
+        alert("Please complete all fields.");
+        return;
+      }
+
+      let message = "";
+
+      if (paymentType.value === "tap") {
+        message = `
+          Parking session started using a TAP card.<br><br>
+          Your license plate and TAP card are linked in the parking system.
+          You must tap your TAP card on Metro transit within the required time window
+          to keep this parking session valid.
+        `;
+      } else {
+        message = `
+          Parking session started using open payment.<br><br>
+          Your parking session is linked to a secure token associated with your card or device.
+          You must use the same card or device to pay your transit fare
+          within the required time window to keep this parking session valid.
+        `;
+      }
+
+      const confirmation = document.getElementById('confirmation');
+      confirmation.innerHTML = message;
+      confirmation.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
